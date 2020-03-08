@@ -17,8 +17,15 @@ public class MatchFinder : Singleton<MatchFinder>
         //Must wait so the raycast starts from the tiles new position
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
 
-        ClearMatch(obj);
+        //Checking for vertical matches
+        CheckMatches(obj, new Vector2[] { adjacentDirections[0], adjacentDirections[1] });
+
+        //Checking for horizontal matches
+        CheckMatches(obj, new Vector2[] { adjacentDirections[2], adjacentDirections[3] });
+
+      
     }
 
 
@@ -73,31 +80,27 @@ public class MatchFinder : Singleton<MatchFinder>
     }
 
 
-
-
-    public void ClearMatch(GameObject targetObj) 
+    private void CheckMatches(GameObject targetObj, Vector2[] directions)
     {
+        List<GameObject> matchedTiles = new List<GameObject>();
+     
 
-        List<GameObject> matchingTilesVertical = new List<GameObject>(); // 2
-        List<GameObject> matchingTilesHorizontal = new List<GameObject>();
-
-        
-
-       
-
-        for (int i = 0; i < adjacentDirections.Length; i++) // 3
+        for (int i = 0; i < directions.Length; i++) // 3
         {
-            matchingTilesVertical.AddRange(FindMatch(adjacentDirections[i], targetObj.transform));
+            matchedTiles.AddRange(FindMatch(directions[i], targetObj.transform));
 
         }
-        if (matchingTilesVertical.Count >= 2) // 4
+        if (matchedTiles.Count >= 2) // 4
         {
-            for (int i = 0; i < matchingTilesVertical.Count; i++) // 5
+            for (int i = 0; i < matchedTiles.Count; i++) // 5
             {
-                matchingTilesVertical[i].GetComponent<SpriteRenderer>().sprite = null;
+                matchedTiles[i].GetComponent<SpriteRenderer>().sprite = null;
             }
-           targetObj.GetComponent<SpriteRenderer>().sprite = null;
-          //  matchFound = true; // 6
+            targetObj.GetComponent<SpriteRenderer>().sprite = null;
+            //  matchFound = true; // 6
         }
+
+
     }
+
 }

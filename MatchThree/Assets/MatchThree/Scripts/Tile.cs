@@ -7,7 +7,7 @@ public class Tile : MonoBehaviour, ISelectable
 
     private bool isSelected;
 
-    [SerializeField]private Vector3 startingPos;
+    [SerializeField] private Vector3 startingPos;
 
     private Vector2[] adjacentDirections = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
 
@@ -43,12 +43,12 @@ public class Tile : MonoBehaviour, ISelectable
             transform.position = startingPos;
             return;
         }
-                 
+
         isSelected = false;
 
         //Need to wait so the positions have time to swap
         // StartCoroutine(StartFindMatch());
-        MatchFinder.Instance.ClearMatch(gameObject);
+        StartCoroutine(MatchFinder.Instance.CheckForMatches(gameObject));
     }
 
 
