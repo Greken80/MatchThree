@@ -5,7 +5,7 @@ using UnityEngine;
 public class Tile : MonoBehaviour, ISelectable
 {
 
-    private bool isSelected;
+   
 
     [SerializeField] private Vector3 startingPos;
 
@@ -18,6 +18,7 @@ public class Tile : MonoBehaviour, ISelectable
 
     private bool matchFound = false;
 
+
     private void Start()
     {
         boxCollider = GetComponent<BoxCollider>();
@@ -29,7 +30,7 @@ public class Tile : MonoBehaviour, ISelectable
     {
         startingPos = transform.position;
         adjecentTiles = GetAdjacentTiles();
-        isSelected = true;
+       
         Debug.Log("I was hit: " + gameObject.name);
     }
 
@@ -44,20 +45,9 @@ public class Tile : MonoBehaviour, ISelectable
             return;
         }
 
-        isSelected = false;
 
-        //Need to wait so the positions have time to swap
-        // StartCoroutine(StartFindMatch());
-        StartCoroutine(MatchFinder.Instance.CheckForMatches(gameObject));
-    }
-
-
-    private IEnumerator StartFindMatch()
-    {
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
-        ClearMatch(adjacentDirections);
+        //Need to wait for the positions to change
+        
     }
 
 
@@ -99,20 +89,10 @@ public class Tile : MonoBehaviour, ISelectable
         return null;
     }
 
-    private List<GameObject> GetAllAdjacentTiles()
-    {
-        List<GameObject> adjacentTiles = new List<GameObject>();
-        for (int i = 0; i < adjacentDirections.Length; i++)
-        {
-            adjacentTiles.Add(GetAdjacent(adjacentDirections[i]));
-        }
-        return adjacentTiles;
-    }
-
     bool CheckIfOverlaps()
     {
         Vector3 otherTilePosition;
-
+        Sprite tempSprite;
         if (adjecentTiles.Count == 0)
         {
             return false;
@@ -125,8 +105,14 @@ public class Tile : MonoBehaviour, ISelectable
                 otherTilePosition = obj.transform.position;
                 if (Vector3.Distance(transform.position, obj.transform.position) < 1)
                 {
-                    transform.position = otherTilePosition;
-                    obj.transform.position = startingPos;
+                    tempSprite = transform.GetComponent<SpriteRenderer>().sprite;
+                    transform.GetComponent<SpriteRenderer>().sprite = obj.GetComponent<SpriteRenderer>().sprite;
+                    obj.GetComponent<SpriteRenderer>().sprite = tempSprite;
+
+                    transform.position = startingPos;
+                    // obj.transform.position = startingPos;
+
+                    StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
                     return true;
                 }
             }
@@ -135,46 +121,4 @@ public class Tile : MonoBehaviour, ISelectable
 
     }
 
-    private List<GameObject> FindMatch(Vector2 castDir)
-    {
-        List<GameObject> matchingTiles = new List<GameObject>();
-
-        Ray ray = new Ray(transform.position, castDir);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            while (hit.collider != null && hit.collider.GetComponent<SpriteRenderer>().sprite == spriteRenderer.sprite)
-            {
-                matchingTiles.Add(hit.collider.gameObject);
-                ray = new Ray(hit.collider.transform.position, castDir);
-                Physics.Raycast(ray, out hit);
-            }
-        }
-
-        return matchingTiles;
-    }
-
-
-
-
-    private void ClearMatch(Vector2[] paths) // 1
-    {
-
-        List<GameObject> matchingTiles = new List<GameObject>(); // 2
-        for (int i = 0; i < paths.Length; i++) // 3
-        {
-            matchingTiles.AddRange(FindMatch(paths[i]));
-
-        }
-        if (matchingTiles.Count >= 2) // 4
-        {
-            for (int i = 0; i < matchingTiles.Count; i++) // 5
-            {
-                matchingTiles[i].GetComponent<SpriteRenderer>().sprite = null;
-            }
-            spriteRenderer.sprite = null;
-            matchFound = true; // 6
-        }
-    }
 }

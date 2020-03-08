@@ -38,23 +38,84 @@ public class BoardManager : Singleton<BoardManager>
         Sprite tempSprite;
    
         for (int x = 0; x < xSize; x++)
-        {      // 11
+        {      
             for (int y = 0; y < ySize; y++)
-            {
-                int spriteNumber = Random.Range(0, spritesList.Count);
-                GameObject newTile = Instantiate(tilePrefab, new Vector3(startX + (xOffset * x), startY + (yOffset * y), 0), Quaternion.identity);
-                tilesArray[x, y] = newTile;
+            {          
+                GameObject tile = Instantiate(tilePrefab, new Vector3(startX + (xOffset * x), startY + (yOffset * y), 0), Quaternion.identity);
+                tilesArray[x, y] = tile;
 
-                newTile.gameObject.name += "posX:"+x + " posY: " + y;
-                newTile.transform.SetParent(transform);    
+                tile.gameObject.name += "posX:"+x + " posY: " + y;
+                tile.transform.SetParent(transform);    
 
                 tempSprite = spritesList[Random.Range(0, spritesList.Count)];
-                newTile.GetComponentInChildren<SpriteRenderer>().sprite = tempSprite;
+                tile.GetComponentInChildren<SpriteRenderer>().sprite = tempSprite;
 
             }
         }
     }
 
+    public IEnumerator FindNullTiles()
+    {
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                if (tilesArray[x, y].GetComponent<SpriteRenderer>().sprite == null)
+                {
+                    yield return StartCoroutine(ShiftTilesDown(x, y));
+                    break;
+                }
+            }
+        }
+    }
 
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.5f)
+    {
+        IsShifting = true;
+        List<SpriteRenderer> renders = new List<SpriteRenderer>();
+        int nullCount = 0;
+
+        for (int y = yStart; y < ySize; y++)
+        {  
+            SpriteRenderer render = tilesArray[x, y].GetComponent<SpriteRenderer>();
+            if (render.sprite == null)
+            { 
+                nullCount++;
+            }
+            renders.Add(render);
+        }
+
+        for (int i = 0; i < nullCount; i++)
+        { 
+            yield return new WaitForSeconds(shiftDelay);
+            for (int k = 0; k < renders.Count - 1; k++)
+            { 
+                renders[k].sprite = renders[k + 1].sprite;
+                renders[k + 1].sprite = null; 
+            }
+        }
+        IsShifting = false;
+    }
+
+    private Sprite GetNewSprite(int x, int y)
+    {
+        List<Sprite> possibleCharacters = new List<Sprite>();
+        possibleCharacters.AddRange(spritesList);
+
+        if (x > 0)
+        {
+            possibleCharacters.Remove(tilesArray[x - 1, y].GetComponent<SpriteRenderer>().sprite);
+        }
+        if (x < xSize - 1)
+        {
+            possibleCharacters.Remove(tilesArray[x + 1, y].GetComponent<SpriteRenderer>().sprite);
+        }
+        if (y > 0)
+        {
+            possibleCharacters.Remove(tilesArray[x, y - 1].GetComponent<SpriteRenderer>().sprite);
+        }
+
+        return possibleCharacters[Random.Range(0, possibleCharacters.Count)];
+    }
 
 }

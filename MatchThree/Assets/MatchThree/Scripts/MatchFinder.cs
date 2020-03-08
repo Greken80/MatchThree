@@ -5,27 +5,31 @@ using UnityEngine;
 public class MatchFinder : Singleton<MatchFinder>
 {
 
-    private Vector2[] adjacentDirections = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
-
-    [SerializeField] List<GameObject> adjecentTiles;
-
-
-
+    bool isRunning;
 
     public IEnumerator CheckForMatches(GameObject obj)
     {
-        //Must wait so the raycast starts from the tiles new position
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
+        if(!isRunning)
+        {
+            isRunning = true;
+            //Must wait so the raycast starts from the tile new position
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
 
-        //Checking for vertical matches
-        CheckMatches(obj, new Vector2[] { adjacentDirections[0], adjacentDirections[1] });
+            //Checking for vertical matches
+            CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
-        //Checking for horizontal matches
-        CheckMatches(obj, new Vector2[] { adjacentDirections[2], adjacentDirections[3] });
+            //Checking for horizontal matches
+            CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
+
+
+
+            StartCoroutine(BoardManager.Instance.FindNullTiles());
+        }
 
       
+        isRunning = false;
     }
 
 
@@ -45,17 +49,6 @@ public class MatchFinder : Singleton<MatchFinder>
         return null;
     }
 
-    private List<GameObject> GetAllAdjacentTiles()
-    {
-        List<GameObject> adjacentTiles = new List<GameObject>();
-        for (int i = 0; i < adjacentDirections.Length; i++)
-        {
-            adjacentTiles.Add(GetAdjacent(adjacentDirections[i]));
-        }
-        return adjacentTiles;
-    }
-
- 
 
     private List<GameObject> FindMatch(Vector2 castDir, Transform transformToRaycastFrom)
     {
@@ -85,21 +78,22 @@ public class MatchFinder : Singleton<MatchFinder>
         List<GameObject> matchedTiles = new List<GameObject>();
      
 
-        for (int i = 0; i < directions.Length; i++) // 3
+        for (int i = 0; i < directions.Length; i++) 
         {
             matchedTiles.AddRange(FindMatch(directions[i], targetObj.transform));
 
         }
-        if (matchedTiles.Count >= 2) // 4
+        if (matchedTiles.Count >= 2)
         {
-            for (int i = 0; i < matchedTiles.Count; i++) // 5
+            for (int i = 0; i < matchedTiles.Count; i++) 
             {
                 matchedTiles[i].GetComponent<SpriteRenderer>().sprite = null;
             }
             targetObj.GetComponent<SpriteRenderer>().sprite = null;
-            //  matchFound = true; // 6
+         
         }
 
+        matchedTiles.Clear();
 
     }
 

@@ -38,6 +38,7 @@ public class InteractionScreenTap : MonoBehaviour
 
             RaycastHit hit;
 
+          
 
             Vector3 tapPosition = camera.ScreenToWorldPoint(touch.position);
             var ray = camera.ScreenPointToRay(touch.position);
