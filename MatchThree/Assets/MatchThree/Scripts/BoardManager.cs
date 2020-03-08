@@ -17,7 +17,7 @@ public class BoardManager : Singleton<BoardManager>
 
     private GameObject[,] tilesArray;
 
-  
+    public List<SpriteRenderer> renders;
 
     public bool IsShifting { get; set; }
 
@@ -69,10 +69,11 @@ public class BoardManager : Singleton<BoardManager>
         }
     }
 
-    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.5f)
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.1f)
     {
         IsShifting = true;
-        List<SpriteRenderer> renders = new List<SpriteRenderer>();
+        //List<SpriteRenderer> renders = new List<SpriteRenderer>();
+        renders = new List<SpriteRenderer>();
         int nullCount = 0;
 
         for (int y = yStart; y < ySize; y++)
@@ -91,9 +92,10 @@ public class BoardManager : Singleton<BoardManager>
             for (int k = 0; k < renders.Count - 1; k++)
             { 
                 renders[k].sprite = renders[k + 1].sprite;
-                renders[k + 1].sprite = null; 
+                renders[k + 1].sprite = GetNewSprite(x, ySize - 1);
             }
         }
+     
         IsShifting = false;
     }
 

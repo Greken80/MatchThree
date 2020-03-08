@@ -5,7 +5,7 @@ using UnityEngine;
 public class MatchFinder : Singleton<MatchFinder>
 {
 
-    bool isRunning;
+    bool isRunning = false;
 
     public IEnumerator CheckForMatches(GameObject obj)
     {
