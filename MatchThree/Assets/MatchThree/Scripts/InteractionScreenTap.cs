@@ -99,6 +99,11 @@ public class InteractionScreenTap : MonoBehaviour
             var ray = camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
+            if(BoardManager.Instance.IsShifting)
+            {
+                return;
+            }
+
             if (Physics.Raycast(ray, out hit))
             {
 

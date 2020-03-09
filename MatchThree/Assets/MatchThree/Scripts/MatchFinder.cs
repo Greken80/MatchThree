@@ -18,12 +18,12 @@ public class MatchFinder : Singleton<MatchFinder>
             yield return new WaitForEndOfFrame();
 
             //Checking for vertical matches
-            CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
+            //CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
             //Checking for horizontal matches
-            CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
+           // CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
-            // CheckMatches(obj, new Vector2[] {Vector2.up, Vector2.down, Vector2.left, Vector2.right });
+            CheckMatches(obj, new Vector2[] {Vector2.up, Vector2.down, Vector2.left, Vector2.right });
 
 
 
@@ -39,7 +39,7 @@ public class MatchFinder : Singleton<MatchFinder>
         CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
         //Checking for horizontal matches
-        CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
+       CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
         // CheckMatches(obj, new Vector2[] {Vector2.up, Vector2.down, Vector2.left, Vector2.right });
 
@@ -77,6 +77,7 @@ public class MatchFinder : Singleton<MatchFinder>
         {
             while (hit.collider != null && hit.collider.GetComponent<SpriteRenderer>().sprite == objSprite)
             {
+
                 matchingTiles.Add(hit.collider.gameObject);
                 ray = new Ray(hit.collider.transform.position, castDir);
                 Physics.Raycast(ray, out hit);
@@ -107,27 +108,29 @@ public class MatchFinder : Singleton<MatchFinder>
 
         }
 
-        matchedTiles.Clear();
+        //targetObj.GetComponent<Tile>().matchFound = true;
 
     }
 
-    /*
+    
     public void ClearAllMatches(GameObject obj)
     {
         if (obj.GetComponent<SpriteRenderer>().sprite == null)
             return;
 
+        bool matchFound = obj.GetComponent<Tile>().matchFound;
+
         CheckMatches(obj,new Vector2[2] { Vector2.left, Vector2.right });
         CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
-        if (matchFound)
+        if (matchFound) 
         {
-            render.sprite = null;
+            obj.GetComponent<SpriteRenderer>().sprite = null;
             matchFound = false;
-            StopCoroutine(BoardManager.instance.FindNullTiles()); //Add this line
-            StartCoroutine(BoardManager.instance.FindNullTiles()); //Add this line
-            SFXManager.instance.PlaySFX(Clip.Clear);
+            StopCoroutine(BoardManager.Instance.FindNullTiles()); //Add this line
+            StartCoroutine(BoardManager.Instance.FindNullTiles()); //Add this line
+           
         }
     }
 
-    */
+    
 }

@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour, ISelectable
     private BoxCollider boxCollider;
     private SpriteRenderer spriteRenderer;
 
-    private bool matchFound = false;
+    public bool matchFound = false;
 
 
     private void Start()
@@ -44,9 +44,6 @@ public class Tile : MonoBehaviour, ISelectable
             transform.position = startingPos;
             return;
         }
-
-
-        //Need to wait for the positions to change
         
     }
 
@@ -115,8 +112,8 @@ public class Tile : MonoBehaviour, ISelectable
                     transform.position = startingPos;
                     // obj.transform.position = startingPos;
 
-                    MatchFinder.Instance.CheckForMatchesTest(obj);
-                   // StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
+                   // MatchFinder.Instance.CheckForMatchesTest(obj);
+                    StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
                     return true;
                 }
             }
