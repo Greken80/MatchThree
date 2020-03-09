@@ -9,6 +9,7 @@ public class InteractionScreenTap : MonoBehaviour
 
 
     private GameObject currentObject;
+
     private ISelectable selectable;
 
     private void Awake()
@@ -24,56 +25,75 @@ public class InteractionScreenTap : MonoBehaviour
     private void Update()
     {
 
-#if !UNITY_EDITOR
+
         if (Input.touchCount > 0)
         {
-            // Bit shift the index of the layer (8) to get a bit mask
-            int layerMask = 1 << 8;
-
-            // This would cast rays only against colliders in layer 8.
-            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-            layerMask = ~layerMask;
-
             Touch touch = Input.GetTouch(0);
 
-            RaycastHit hit;
-
-          
-
-            Vector3 tapPosition = camera.ScreenToWorldPoint(touch.position);
-            var ray = camera.ScreenPointToRay(touch.position);
-
-            if(Physics.Raycast(ray, out hit, 0, 50, QueryTriggerInteraction.Ignore))
+            if (touch.phase == TouchPhase.Began)
             {
 
-                if(hit.transform.gameObject.GetComponent<IOnSelected>() != null)
+                Vector3 tapPosition = camera.ScreenToWorldPoint(touch.position);
+                var ray = camera.ScreenPointToRay(touch.position);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit))
                 {
-                      hit.transform.gameObject.GetComponent<IOnSelected>().HandleOnSelected();
-                    Debug.DrawRay(tapPosition, (hit.transform.position - this.transform.position), Color.yellow, 1f);
+                    MonoBehaviour[] list = hit.transform.gameObject.GetComponentsInChildren<MonoBehaviour>();
+
+                    selectable = CheckIfObjectHasInterface(list);
+
+
+                    if (selectable == null)
+                    {
+                        return;
+                    }
+
+                    Debug.DrawRay(tapPosition, (hit.transform.position - this.transform.position) * 100, Color.yellow, 1f);
                     Debug.Log("Did Hit");
+
+                    currentObject = hit.transform.gameObject;
+
+
+                    selectable.OnSelected();
+
                 }
-              
+                else
+                {
+                    Debug.DrawRay(tapPosition, transform.TransformDirection(Vector3.forward), Color.white, 1f);
+                    Debug.Log("Did not Hit");
+                }
+
+           
+            }
+
+            if (touch.phase == TouchPhase.Moved && currentObject != null)
+            {
+                Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, camera.transform.position.z - currentObject.transform.position.z);
+                Vector3 curPosition = camera.ScreenToWorldPoint(mousePosition);
+                currentObject.transform.position = curPosition;
 
             }
-            else
+
+            if (touch.phase == TouchPhase.Ended)
             {
-                Debug.DrawRay(tapPosition, transform.TransformDirection(Vector3.forward), Color.white, 1f);
-                Debug.Log("Did not Hit");
+                if (selectable != null)
+                {
+                    selectable.OnDeselected();
+                    currentObject = null;
+                    selectable = null;
+
+                }
+
             }
-       
-          
+
+
         }
-#endif
+
 
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))
         {
-            // Bit shift the index of the layer (8) to get a bit mask
-            // int layerMask = 1 << 8;
-
-            // This would cast rays only against colliders in layer 8.
-            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-            //layerMask = ~layerMask;
 
             Vector3 tapPosition = camera.ScreenToWorldPoint(Input.mousePosition);
             var ray = camera.ScreenPointToRay(Input.mousePosition);
@@ -108,8 +128,9 @@ public class InteractionScreenTap : MonoBehaviour
 
         if (Input.GetMouseButton(0) && currentObject != null)
         {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 26);
-            Vector3 curPosition = camera.ScreenToWorldPoint(mousePosition);
+       
+            Vector3 curPosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z - camera.transform.position.z));
+           
             currentObject.transform.position = curPosition;
 
         }
@@ -117,7 +138,7 @@ public class InteractionScreenTap : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            if(selectable != null)
+            if (selectable != null)
             {
                 selectable.OnDeselected();
                 currentObject = null;

@@ -54,7 +54,7 @@ public class Tile : MonoBehaviour, ISelectable
     private List<GameObject> GetAdjacentTiles()
     {
         boxCollider.enabled = false;
-        Collider[] adjecentColliders = Physics.OverlapSphere(transform.position, 3f);
+        Collider[] adjecentColliders = Physics.OverlapSphere(transform.position, 5f);
 
         if (adjecentColliders.Length == 0)
         {
@@ -103,7 +103,10 @@ public class Tile : MonoBehaviour, ISelectable
             if (boxCollider.bounds.Intersects(obj.GetComponent<BoxCollider>().bounds))
             {
                 otherTilePosition = obj.transform.position;
-                if (Vector3.Distance(transform.position, obj.transform.position) < 1)
+
+                float overlapRange = boxCollider.bounds.extents.x;
+
+                if (Vector3.Distance(transform.position, obj.transform.position) < overlapRange)
                 {
                     tempSprite = transform.GetComponent<SpriteRenderer>().sprite;
                     transform.GetComponent<SpriteRenderer>().sprite = obj.GetComponent<SpriteRenderer>().sprite;
@@ -112,7 +115,8 @@ public class Tile : MonoBehaviour, ISelectable
                     transform.position = startingPos;
                     // obj.transform.position = startingPos;
 
-                    StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
+                    MatchFinder.Instance.CheckForMatchesTest(obj);
+                   // StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
                     return true;
                 }
             }
