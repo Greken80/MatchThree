@@ -68,18 +68,20 @@ public class BoardManager : Singleton<BoardManager>
             }
         }
 
-        /*
+
+        
         for (int x = 0; x < xSize; x++)
         {
             for (int y = 0; y < ySize; y++)
             {
-                MatchFinder.Instance.ClearAllMatches(tilesArray[x, y]);
+               yield return StartCoroutine(MatchFinder.Instance.ClearAllMatchesAsync(tilesArray[x, y]));
+               //MatchFinder.Instance.ClearAllMatches(tilesArray[x, y]);
             }
         }
-        */
+        
     }
 
-    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.03f)
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.5f)
     {
         IsShifting = true;
        
@@ -104,6 +106,7 @@ public class BoardManager : Singleton<BoardManager>
             { 
                 renders[k].sprite = renders[k + 1].sprite;
                 renders[k + 1].sprite = GetNewSprite(x, ySize);
+               
             }
         }
      

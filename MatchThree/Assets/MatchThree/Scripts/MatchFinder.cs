@@ -5,7 +5,11 @@ using UnityEngine;
 public class MatchFinder : Singleton<MatchFinder>
 {
 
+    //Bugg när man byter plats på 2 tiles. Om den ena flyttas längre ned i en kolumn blir sprite null och fylls inte på som den ska. Misstänker att den blir matchad men inte på ett korrekt sätt
+
     bool isRunning = false;
+
+    bool isMatchFound = false;
 
     public IEnumerator CheckForMatches(GameObject obj)
     {
@@ -21,9 +25,9 @@ public class MatchFinder : Singleton<MatchFinder>
             //CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
             //Checking for horizontal matches
-           // CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
+            // CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
-            CheckMatches(obj, new Vector2[] {Vector2.up, Vector2.down, Vector2.left, Vector2.right });
+            CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right });
 
 
 
@@ -36,31 +40,14 @@ public class MatchFinder : Singleton<MatchFinder>
     {
 
         //Checking for vertical matches
-        CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
+       // CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
         //Checking for horizontal matches
-       CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
+       // CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
-        // CheckMatches(obj, new Vector2[] {Vector2.up, Vector2.down, Vector2.left, Vector2.right });
+         CheckMatches(obj, new Vector2[] {Vector2.up, Vector2.down, Vector2.left, Vector2.right });
 
         StartCoroutine(BoardManager.Instance.FindNullTiles());
-    }
-
-
-    private GameObject GetAdjacent(Vector2 castDir)
-    {
-        Ray ray = new Ray(transform.position, castDir);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.collider != null)
-            {
-                return hit.collider.gameObject;
-            }
-        }
-
-        return null;
     }
 
 
@@ -104,33 +91,56 @@ public class MatchFinder : Singleton<MatchFinder>
             {
                 matchedTiles[i].GetComponent<SpriteRenderer>().sprite = null;
             }
-            targetObj.GetComponent<SpriteRenderer>().sprite = null;
-
+           targetObj.GetComponent<SpriteRenderer>().sprite = null;
+           targetObj.GetComponent<Tile>().matchFound = true;
         }
 
-        //targetObj.GetComponent<Tile>().matchFound = true;
+
 
     }
 
-    
+
+    public IEnumerator ClearAllMatchesAsync(GameObject obj)
+    {
+
+        if (obj.GetComponent<SpriteRenderer>().sprite == null || obj.GetComponent<SpriteRenderer>().sprite != null)
+            yield break;
+
+        
+
+        CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
+        CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
+
+        if (obj.GetComponent<Tile>().matchFound)
+        {
+            obj.GetComponent<SpriteRenderer>().sprite = null;
+            obj.GetComponent<Tile>().matchFound = false;
+            StopCoroutine(BoardManager.Instance.FindNullTiles()); 
+            StartCoroutine(BoardManager.Instance.FindNullTiles());
+
+        }
+    }
+
+
     public void ClearAllMatches(GameObject obj)
     {
         if (obj.GetComponent<SpriteRenderer>().sprite == null)
             return;
 
-        bool matchFound = obj.GetComponent<Tile>().matchFound;
+      
 
-        CheckMatches(obj,new Vector2[2] { Vector2.left, Vector2.right });
+        CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
         CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
-        if (matchFound) 
+
+        if (obj.GetComponent<Tile>().matchFound)
         {
             obj.GetComponent<SpriteRenderer>().sprite = null;
-            matchFound = false;
+            obj.GetComponent<Tile>().matchFound = false;
             StopCoroutine(BoardManager.Instance.FindNullTiles()); //Add this line
             StartCoroutine(BoardManager.Instance.FindNullTiles()); //Add this line
-           
+
         }
     }
 
-    
+
 }

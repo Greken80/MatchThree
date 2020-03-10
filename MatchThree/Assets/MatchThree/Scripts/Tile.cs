@@ -9,7 +9,7 @@ public class Tile : MonoBehaviour, ISelectable
 
     [SerializeField] private Vector3 startingPos;
 
-    private Vector2[] adjacentDirections = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+    //private Vector2[] adjacentDirections = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
 
     [SerializeField] List<GameObject> adjecentTiles;
 
@@ -112,8 +112,8 @@ public class Tile : MonoBehaviour, ISelectable
                     transform.position = startingPos;
                     // obj.transform.position = startingPos;
 
-                   // MatchFinder.Instance.CheckForMatchesTest(obj);
-                    StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
+                     MatchFinder.Instance.CheckForMatchesTest(obj);
+                    //StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
                     return true;
                 }
             }
