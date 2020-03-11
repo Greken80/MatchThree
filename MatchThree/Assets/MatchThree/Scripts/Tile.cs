@@ -5,19 +5,19 @@ using UnityEngine;
 public class Tile : MonoBehaviour, ISelectable
 {
 
-   
+
 
     [SerializeField] private Vector3 startingPos;
-
-    //private Vector2[] adjacentDirections = new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
-
     [SerializeField] List<GameObject> adjecentTiles;
+
+
 
     private BoxCollider boxCollider;
     private SpriteRenderer spriteRenderer;
 
     public bool matchFound = false;
 
+    private GameObject swappedObject;
 
     private void Start()
     {
@@ -30,28 +30,40 @@ public class Tile : MonoBehaviour, ISelectable
     {
         startingPos = transform.position;
         adjecentTiles = GetAdjacentTiles();
-       
+
         Debug.Log("I was hit: " + gameObject.name);
     }
 
 
     public void OnDeselected()
     {
+       //CheckIfOverlap();
 
-        bool isOverlapping = CheckIfOverlaps();
-        if (!isOverlapping)
+
+
+        if (!CheckIfOverlap())
         {
             transform.position = startingPos;
-            return;
         }
-        
+        else
+        {
+            //MatchFinder.Instance.CheckForMatchesTest(swappedObject);
+            MatchFinder.Instance.CheckForMatchesTest(new GameObject[]{ gameObject, swappedObject});
+        }
+
+       // swappedObject = null;
+        adjecentTiles.Clear();
+
+
     }
 
-
+    // Finds all adjecent tiles in all directions
     private List<GameObject> GetAdjacentTiles()
     {
+        float detectionRadius = boxCollider.bounds.size.x;
+
         boxCollider.enabled = false;
-        Collider[] adjecentColliders = Physics.OverlapSphere(transform.position, 5f);
+        Collider[] adjecentColliders = Physics.OverlapSphere(transform.position, detectionRadius);
 
         if (adjecentColliders.Length == 0)
         {
@@ -70,6 +82,7 @@ public class Tile : MonoBehaviour, ISelectable
 
     }
 
+    //Finds adjencent tiles in Top, Down, Left, Right directions
     private GameObject GetAdjacent(Vector2 castDir)
     {
         Ray ray = new Ray(transform.position, castDir);
@@ -86,9 +99,8 @@ public class Tile : MonoBehaviour, ISelectable
         return null;
     }
 
-    bool CheckIfOverlaps()
+    bool CheckIfOverlap()
     {
-        Vector3 otherTilePosition;
         Sprite tempSprite;
         if (adjecentTiles.Count == 0)
         {
@@ -99,21 +111,17 @@ public class Tile : MonoBehaviour, ISelectable
         {
             if (boxCollider.bounds.Intersects(obj.GetComponent<BoxCollider>().bounds))
             {
-                otherTilePosition = obj.transform.position;
+                float overlapDetectionRange = boxCollider.bounds.extents.x;
 
-                float overlapRange = boxCollider.bounds.extents.x;
-
-                if (Vector3.Distance(transform.position, obj.transform.position) < overlapRange)
+                if (Vector3.Distance(transform.position, obj.transform.position) < overlapDetectionRange)
                 {
                     tempSprite = transform.GetComponent<SpriteRenderer>().sprite;
                     transform.GetComponent<SpriteRenderer>().sprite = obj.GetComponent<SpriteRenderer>().sprite;
                     obj.GetComponent<SpriteRenderer>().sprite = tempSprite;
 
                     transform.position = startingPos;
-                    // obj.transform.position = startingPos;
 
-                     MatchFinder.Instance.CheckForMatchesTest(obj);
-                    //StartCoroutine(MatchFinder.Instance.CheckForMatches(obj));
+                    swappedObject = obj;
                     return true;
                 }
             }

@@ -15,9 +15,11 @@ public class BoardManager : Singleton<BoardManager>
     [SerializeField] private int xSize;
     [SerializeField] private int ySize;
 
-    private GameObject[,] tilesArray;
 
-    public List<SpriteRenderer> renders;
+    //Made it serialized to be able to inspect it in editor
+    [SerializeField] private List<SpriteRenderer> renders;
+
+    private GameObject[,] tilesArray;
 
     public bool IsShifting { get; set; }
 
@@ -56,6 +58,7 @@ public class BoardManager : Singleton<BoardManager>
 
     public IEnumerator FindNullTiles()
     {
+       
         for (int x = 0; x < xSize; x++)
         {
             for (int y = 0; y < ySize; y++)
@@ -67,18 +70,15 @@ public class BoardManager : Singleton<BoardManager>
                 }
             }
         }
-
-
-        
+      
         for (int x = 0; x < xSize; x++)
         {
             for (int y = 0; y < ySize; y++)
-            {
-               yield return StartCoroutine(MatchFinder.Instance.ClearAllMatchesAsync(tilesArray[x, y]));
-               //MatchFinder.Instance.ClearAllMatches(tilesArray[x, y]);
+            {            
+               MatchFinder.Instance.ClearAllMatches(tilesArray[x, y]);
             }
         }
-        
+       
     }
 
     private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.5f)
@@ -105,13 +105,11 @@ public class BoardManager : Singleton<BoardManager>
             for (int k = 0; k < renders.Count-1; k++)
             { 
                 renders[k].sprite = renders[k + 1].sprite;
-                renders[k + 1].sprite = GetNewSprite(x, ySize);
-               
+                renders[k + 1].sprite = GetNewSprite(x, ySize - 1);
+
             }
         }
      
-
-
         IsShifting = false;
     }
 
@@ -121,7 +119,7 @@ public class BoardManager : Singleton<BoardManager>
     {
         List<Sprite> possibleCharacters = new List<Sprite>();
         possibleCharacters.AddRange(spritesList);
-        /*
+        
         if (x > 0)
         {
             possibleCharacters.Remove(tilesArray[x - 1, y].GetComponent<SpriteRenderer>().sprite);
@@ -134,7 +132,7 @@ public class BoardManager : Singleton<BoardManager>
         {
             possibleCharacters.Remove(tilesArray[x, y - 1].GetComponent<SpriteRenderer>().sprite);
         }
-        */
+        
         return possibleCharacters[Random.Range(0, possibleCharacters.Count)];
     }
 
