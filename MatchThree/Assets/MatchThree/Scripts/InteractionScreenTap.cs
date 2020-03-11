@@ -22,27 +22,26 @@ public class InteractionScreenTap : MonoBehaviour
 
     }
 
-
     private void Update()
     {
-        if(IsPointerOverUIObject())
-        {
-            return;
-        }
-
+  
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
 
             if (touch.phase == TouchPhase.Began)
             {
-
+                if (IsPointerOverUIObject())
+                {
+                    return;
+                }
                 Vector3 tapPosition = camera.ScreenToWorldPoint(touch.position);
                 var ray = camera.ScreenPointToRay(touch.position);
                 RaycastHit hit;
 
                 if (Physics.Raycast(ray, out hit))
                 {
+             
                     MonoBehaviour[] list = hit.transform.gameObject.GetComponentsInChildren<MonoBehaviour>();
 
                     selectable = CheckIfObjectHasInterface(list);
@@ -73,8 +72,8 @@ public class InteractionScreenTap : MonoBehaviour
 
             if (touch.phase == TouchPhase.Moved && currentObject != null)
             {
-                Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, camera.transform.position.z - currentObject.transform.position.z);
-                Vector3 curPosition = camera.ScreenToWorldPoint(mousePosition);
+                Vector3 curPosition = camera.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y,  -camera.transform.position.z));
+
                 currentObject.transform.position = curPosition;
 
             }
@@ -90,7 +89,6 @@ public class InteractionScreenTap : MonoBehaviour
                 }
 
             }
-
 
         }
 
@@ -137,9 +135,10 @@ public class InteractionScreenTap : MonoBehaviour
 
         if (Input.GetMouseButton(0) && currentObject != null)
         {
-       
-            Vector3 curPosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z - camera.transform.position.z));
-           
+
+            Vector3 curPosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,Input.mousePosition.z - camera.transform.position.z));
+
+        
             currentObject.transform.position = curPosition;
 
         }

@@ -99,8 +99,8 @@ public class MatchFinder : Singleton<MatchFinder>
         if (obj.GetComponent<SpriteRenderer>().sprite == null)
             return;
 
-        //CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
-       // CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
+       // CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
+        //CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
 
         if (obj.GetComponent<Tile>().matchFound)
         {

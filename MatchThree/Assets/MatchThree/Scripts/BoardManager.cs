@@ -31,14 +31,16 @@ public class BoardManager : Singleton<BoardManager>
 
     private void CreateBoard(float xOffset, float yOffset)
     {
-        tilesArray = new GameObject[xSize, ySize]; 
+        tilesArray = new GameObject[xSize, ySize];
 
-
+      
         float startX = transform.position.x;
         float startY = transform.position.y;
 
+        Sprite[] previousLeft = new Sprite[ySize];
+        Sprite previousBelow = null;
         Sprite tempSprite;
-   
+  
         for (int x = 0; x < xSize; x++)
         {      
             for (int y = 0; y < ySize; y++)
@@ -47,11 +49,19 @@ public class BoardManager : Singleton<BoardManager>
                 tilesArray[x, y] = tile;
 
                 tile.gameObject.name += "posX:"+x + " posY: " + y;
-                tile.transform.SetParent(transform);    
+                tile.transform.SetParent(transform);
 
-                tempSprite = spritesList[Random.Range(0, spritesList.Count)];
+                List<Sprite> possibleSprites = new List<Sprite>();
+
+                possibleSprites.AddRange(spritesList); 
+                possibleSprites.Remove(previousLeft[y]); 
+                possibleSprites.Remove(previousBelow);
+
+                tempSprite = possibleSprites[Random.Range(0, possibleSprites.Count)];
                 tile.GetComponentInChildren<SpriteRenderer>().sprite = tempSprite;
 
+                previousLeft[y] = tempSprite;
+                previousBelow = tempSprite;
             }
         }
     }
