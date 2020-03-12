@@ -10,25 +10,34 @@ public class MatchFinder : Singleton<MatchFinder>
         
         foreach (GameObject obj in objects)
         {
+
+            //Turned off diagonal search because of a "bug". Tiles dosent get a new sprite sometimes, results in one or more empty tiles in the board
+            //Checks diagonal for matches Top Right/Bottom Left;     
+            CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
+
+            //Checks diagonal for matches Top left/Bottom Right;
+            CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
+
             //Checking for vertical matches
             CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
             //Checking for horizontal matches
             CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
-            //Turned of diagonal search because of a "bug". Tiles dosent get a new sprite sometimes, results in one or more empty tiles in the board
-            //Checks diagonal for matches Top Right/Bottom Left;     
-            //CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
-
-            //Checks diagonal for matches Top left/Bottom Right;
-            //CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
+  
 
         }
 
-        foreach (GameObject obj in objects)
+
+        GameObject[,] tiles = BoardManager.Instance.tilesArray;
+
+        foreach (GameObject obj in tiles)
         {
-            ClearAllMatches(obj);
+            ClearTilesIfMatched(obj);
         }
+
+        BoardManager.Instance.StopAllCoroutines();
+        StartCoroutine(BoardManager.Instance.FindNullTiles());
 
     }
 
@@ -76,17 +85,17 @@ public class MatchFinder : Singleton<MatchFinder>
 
                 for (int y = 0; y < matchedTiles.Count; y++)
                 {
-                    
-                    matchedTiles[y].GetComponent<SpriteRenderer>().sprite = null;
+                    matchedTiles[y].GetComponent<Tile>().matchFound = true;
+                  //matchedTiles[y].GetComponent<SpriteRenderer>().sprite = null;
                 }
-
+               // targetObj.GetComponent<SpriteRenderer>().sprite = null;
                 targetObj.GetComponent<Tile>().matchFound = true;           
             }
         }
 
         if(matchedTiles.Count >= 2)
         {
-            //Adding one becuase the Tile dosent count itself as a match
+            //Adding +1 becuase the Tile dosent count itself as a match
             ScoreManager.Instance.AddPoints(matchedTiles.Count + 1);
         }
       
@@ -101,6 +110,11 @@ public class MatchFinder : Singleton<MatchFinder>
 
         CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
         CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
+        //Checks diagonal for matches Top Right/Bottom Left;     
+        CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
+
+        //Checks diagonal for matches Top left/Bottom Right;
+        CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
 
         if (obj.GetComponent<Tile>().matchFound)
         {
@@ -112,6 +126,17 @@ public class MatchFinder : Singleton<MatchFinder>
 
         }
 
+    }
+
+
+    public void ClearTilesIfMatched(GameObject obj)
+    {
+    
+        if (obj.GetComponent<Tile>().matchFound)
+        {
+            obj.GetComponent<SpriteRenderer>().sprite = null;
+            obj.GetComponent<Tile>().matchFound = false;      
+        }
     }
 
 

@@ -54,7 +54,7 @@ public class Tile : MonoBehaviour, ISelectable
         float detectionRadius = boxCollider.bounds.size.x;
 
         boxCollider.enabled = false;
-        Collider[] adjecentColliders = Physics.OverlapSphere(transform.position, detectionRadius);
+        Collider[] adjecentColliders = Physics.OverlapSphere(transform.position, detectionRadius + BoardManager.Instance.tilePadding);
 
         if (adjecentColliders.Length == 0)
         {
