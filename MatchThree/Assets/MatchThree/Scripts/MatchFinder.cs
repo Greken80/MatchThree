@@ -5,25 +5,9 @@ using UnityEngine;
 public class MatchFinder : Singleton<MatchFinder>
 {
 
-    public void CheckForMatchesTest(GameObject obj)
+    public void CheckForMatches(GameObject[] objects)
     {
-
-        //Checking for vertical matches
-        CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
-
-        //Checking for horizontal matches
-        CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
-
-        //CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right });
-
-        ClearAllMatches(obj);
-
-    }
-
-
-    public void CheckForMatchesTest(GameObject[] objects)
-    {
-
+        
         foreach (GameObject obj in objects)
         {
             //Checking for vertical matches
@@ -32,10 +16,15 @@ public class MatchFinder : Singleton<MatchFinder>
             //Checking for horizontal matches
             CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
-           // CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right });
-          
+            //Turned of diagonal search because of a "bug". Tiles dosent get a new sprite sometimes, results in one or more empty tiles in the board
+            //Checks diagonal for matches Top Right/Bottom Left;     
+            //CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
+
+            //Checks diagonal for matches Top left/Bottom Right;
+            //CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
+
         }
-     
+
         foreach (GameObject obj in objects)
         {
             ClearAllMatches(obj);
@@ -52,13 +41,16 @@ public class MatchFinder : Singleton<MatchFinder>
         Ray ray = new Ray(rayOrigin.position, castDir);
         RaycastHit hit;
 
-        Sprite objSprite = rayOrigin.GetComponent<SpriteRenderer>().sprite;
+        Sprite originSprite = rayOrigin.GetComponent<SpriteRenderer>().sprite;
 
         if (Physics.Raycast(ray, out hit))
         {
-            while (hit.collider != null && hit.collider.GetComponent<SpriteRenderer>().sprite == objSprite)
-            {
+#if UNITY_EDITOR
+            Debug.DrawRay(rayOrigin.position, castDir * 100, Color.magenta, 1f, false);
+#endif
 
+            while (hit.collider != null && hit.collider.GetComponent<SpriteRenderer>().sprite == originSprite)
+            {
                 matchingTiles.Add(hit.collider.gameObject);
                 ray = new Ray(hit.collider.transform.position, castDir);
                 Physics.Raycast(ray, out hit);
@@ -79,17 +71,25 @@ public class MatchFinder : Singleton<MatchFinder>
         {
             matchedTiles.AddRange(FindMatch(directions[i], targetObj.transform));
 
-        }
+            if (matchedTiles.Count >= 2)
+            {          
 
-        if (matchedTiles.Count >= 2)
-        {
-            for (int i = 0; i < matchedTiles.Count; i++)
-            {
-                matchedTiles[i].GetComponent<SpriteRenderer>().sprite = null;
+                for (int y = 0; y < matchedTiles.Count; y++)
+                {
+                    
+                    matchedTiles[y].GetComponent<SpriteRenderer>().sprite = null;
+                }
+
+                targetObj.GetComponent<Tile>().matchFound = true;           
             }
-
-            targetObj.GetComponent<Tile>().matchFound = true;
         }
+
+        if(matchedTiles.Count >= 2)
+        {
+            //Adding one becuase the Tile dosent count itself as a match
+            ScoreManager.Instance.AddPoints(matchedTiles.Count + 1);
+        }
+      
 
     }
 
@@ -99,18 +99,16 @@ public class MatchFinder : Singleton<MatchFinder>
         if (obj.GetComponent<SpriteRenderer>().sprite == null)
             return;
 
-       // CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
-        //CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
+        CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
+        CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
 
         if (obj.GetComponent<Tile>().matchFound)
         {
             obj.GetComponent<SpriteRenderer>().sprite = null;
             obj.GetComponent<Tile>().matchFound = false;
 
-         
             BoardManager.Instance.StopAllCoroutines();
-           // StopCoroutine(BoardManager.Instance.FindNullTiles()); 
-            StartCoroutine(BoardManager.Instance.FindNullTiles()); 
+            StartCoroutine(BoardManager.Instance.FindNullTiles());
 
         }
 

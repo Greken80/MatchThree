@@ -135,12 +135,9 @@ public class InteractionScreenTap : MonoBehaviour
 
         if (Input.GetMouseButton(0) && currentObject != null)
         {
-
             Vector3 curPosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,Input.mousePosition.z - camera.transform.position.z));
-
-        
+ 
             currentObject.transform.position = curPosition;
-
         }
 
 
@@ -153,7 +150,6 @@ public class InteractionScreenTap : MonoBehaviour
                 selectable = null;
 
             }
-
         }
 #endif
     }

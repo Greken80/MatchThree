@@ -5,19 +5,15 @@ using UnityEngine;
 public class Tile : MonoBehaviour, ISelectable
 {
 
-
-
     [SerializeField] private Vector3 startingPos;
     [SerializeField] List<GameObject> adjecentTiles;
 
-
-
     private BoxCollider boxCollider;
     private SpriteRenderer spriteRenderer;
+    private GameObject swappedObject;
 
     public bool matchFound = false;
-
-    private GameObject swappedObject;
+ 
 
     private void Start()
     {
@@ -37,9 +33,6 @@ public class Tile : MonoBehaviour, ISelectable
 
     public void OnDeselected()
     {
-       //CheckIfOverlap();
-
-
 
         if (!CheckIfOverlap())
         {
@@ -47,13 +40,11 @@ public class Tile : MonoBehaviour, ISelectable
         }
         else
         {
-            //MatchFinder.Instance.CheckForMatchesTest(swappedObject);
-            MatchFinder.Instance.CheckForMatchesTest(new GameObject[]{ gameObject, swappedObject});
+
+            MatchFinder.Instance.CheckForMatches(new GameObject[] { gameObject, swappedObject });
         }
 
-       // swappedObject = null;
         adjecentTiles.Clear();
-
 
     }
 
@@ -82,23 +73,6 @@ public class Tile : MonoBehaviour, ISelectable
 
     }
 
-    //Finds adjencent tiles in Top, Down, Left, Right directions
-    private GameObject GetAdjacent(Vector2 castDir)
-    {
-        Ray ray = new Ray(transform.position, castDir);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.collider != null)
-            {
-                return hit.collider.gameObject;
-            }
-        }
-
-        return null;
-    }
-
     bool CheckIfOverlap()
     {
         Sprite tempSprite;
@@ -115,8 +89,8 @@ public class Tile : MonoBehaviour, ISelectable
 
                 if (Vector3.Distance(transform.position, obj.transform.position) < overlapDetectionRange)
                 {
-                    tempSprite = transform.GetComponent<SpriteRenderer>().sprite;
-                    transform.GetComponent<SpriteRenderer>().sprite = obj.GetComponent<SpriteRenderer>().sprite;
+                    tempSprite = spriteRenderer.sprite;
+                    spriteRenderer.sprite = obj.GetComponent<SpriteRenderer>().sprite;
                     obj.GetComponent<SpriteRenderer>().sprite = tempSprite;
 
                     transform.position = startingPos;

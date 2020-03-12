@@ -97,6 +97,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingPos: {x: 0, y: 0, z: 0}
   adjecentTiles: []
+  matchFound: 0
+  tileValue: 50
 --- !u!65 &2951431100478873788
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -25,11 +25,18 @@ public class BoardManager : Singleton<BoardManager>
 
     void Start()
     {
-        Vector2 size = tilePrefab.GetComponent<SpriteRenderer>().bounds.size;
-        CreateBoard(size.x, size.y);
+        CreateBoard();
+
     }
 
-    private void CreateBoard(float xOffset, float yOffset)
+    private void CreateBoard()
+    {
+        Vector2 size = tilePrefab.GetComponent<SpriteRenderer>().bounds.size;
+        SetupBoard(size.x, size.y);
+    }
+
+
+    private void SetupBoard(float xOffset, float yOffset)
     {
         tilesArray = new GameObject[xSize, ySize];
 
@@ -74,7 +81,7 @@ public class BoardManager : Singleton<BoardManager>
             for (int y = 0; y < ySize; y++)
             {
                 if (tilesArray[x, y].GetComponent<SpriteRenderer>().sprite == null)
-                {
+                {                
                     yield return StartCoroutine(ShiftTilesDown(x, y));
                     break;
                 }
@@ -91,7 +98,7 @@ public class BoardManager : Singleton<BoardManager>
        
     }
 
-    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.5f)
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = 0.1f)
     {
         IsShifting = true;
        
@@ -127,23 +134,41 @@ public class BoardManager : Singleton<BoardManager>
     
     private Sprite GetNewSprite(int x, int y)
     {
-        List<Sprite> possibleCharacters = new List<Sprite>();
-        possibleCharacters.AddRange(spritesList);
+        List<Sprite> possibleSprites = new List<Sprite>();
+        possibleSprites.AddRange(spritesList);
         
         if (x > 0)
         {
-            possibleCharacters.Remove(tilesArray[x - 1, y].GetComponent<SpriteRenderer>().sprite);
+            possibleSprites.Remove(tilesArray[x - 1, y].GetComponent<SpriteRenderer>().sprite);
         }
         if (x < xSize - 1)
         {
-            possibleCharacters.Remove(tilesArray[x + 1, y].GetComponent<SpriteRenderer>().sprite);
+            possibleSprites.Remove(tilesArray[x + 1, y].GetComponent<SpriteRenderer>().sprite);
         }
         if (y > 0)
         {
-            possibleCharacters.Remove(tilesArray[x, y - 1].GetComponent<SpriteRenderer>().sprite);
+            possibleSprites.Remove(tilesArray[x, y - 1].GetComponent<SpriteRenderer>().sprite);
         }
         
-        return possibleCharacters[Random.Range(0, possibleCharacters.Count)];
+        return possibleSprites[Random.Range(0, possibleSprites.Count)];
     }
+
+    public void ResetBoard()
+    {
+        StopAllCoroutines();
+        IsShifting = true;
+
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                Destroy(tilesArray[x, y]);
+            }
+        }
+        ScoreManager.Instance.ScoreReset();
+        CreateBoard();
+        IsShifting = false;
+    }
+
 
 }
