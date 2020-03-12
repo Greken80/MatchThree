@@ -11,25 +11,24 @@ public class MatchFinder : Singleton<MatchFinder>
         foreach (GameObject obj in objects)
         {
 
-            //Turned off diagonal search because of a "bug". Tiles dosent get a new sprite sometimes, results in one or more empty tiles in the board
+            //Turned off diagonal search because of a "bug". Tiles dosent get a new sprite sometimes, results in one or more empty tiles in the board.
+            //The bug is in the tile shifter. During a diagonally match it is possible that the column can have empty-filled-empty sprites. This causes the current shifter to behave porly.
             //Checks diagonal for matches Top Right/Bottom Left;     
-            CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
+            //CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
 
             //Checks diagonal for matches Top left/Bottom Right;
-            CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
+            //CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
 
             //Checking for vertical matches
             CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
             //Checking for horizontal matches
-            CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
-
-  
+            CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });  
 
         }
+           
 
-
-        GameObject[,] tiles = BoardManager.Instance.tilesArray;
+            GameObject[,] tiles = BoardManager.Instance.tilesArray;
 
         foreach (GameObject obj in tiles)
         {
@@ -42,7 +41,7 @@ public class MatchFinder : Singleton<MatchFinder>
     }
 
 
-    private List<GameObject> FindMatch(Vector2 castDir, Transform rayOrigin)
+        private List<GameObject> FindMatch(Vector2 castDir, Transform rayOrigin)
     {
         rayOrigin.GetComponent<BoxCollider>().enabled = false;
         List<GameObject> matchingTiles = new List<GameObject>();
@@ -86,9 +85,7 @@ public class MatchFinder : Singleton<MatchFinder>
                 for (int y = 0; y < matchedTiles.Count; y++)
                 {
                     matchedTiles[y].GetComponent<Tile>().matchFound = true;
-                  //matchedTiles[y].GetComponent<SpriteRenderer>().sprite = null;
                 }
-               // targetObj.GetComponent<SpriteRenderer>().sprite = null;
                 targetObj.GetComponent<Tile>().matchFound = true;           
             }
         }
@@ -110,11 +107,13 @@ public class MatchFinder : Singleton<MatchFinder>
 
         CheckMatches(obj, new Vector2[2] { Vector2.left, Vector2.right });
         CheckMatches(obj, new Vector2[2] { Vector2.up, Vector2.down });
+
+        //Turned off diagonal matching
         //Checks diagonal for matches Top Right/Bottom Left;     
-        CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
+        //CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
 
         //Checks diagonal for matches Top left/Bottom Right;
-        CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
+       // CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
 
         if (obj.GetComponent<Tile>().matchFound)
         {

@@ -51,23 +51,21 @@ public class InteractionScreenTap : MonoBehaviour
                     {
                         return;
                     }
-
+#if UNITY_EDITOR
                     Debug.DrawRay(tapPosition, (hit.transform.position - this.transform.position) * 100, Color.yellow, 1f);
                     Debug.Log("Did Hit");
+#endif
 
                     currentObject = hit.transform.gameObject;
-
-
                     selectable.OnSelected();
-
                 }
                 else
                 {
+#if UNITY_EDITOR
                     Debug.DrawRay(tapPosition, transform.TransformDirection(Vector3.forward), Color.white, 1f);
                     Debug.Log("Did not Hit");
-                }
-
-           
+#endif
+                }      
             }
 
             if (touch.phase == TouchPhase.Moved && currentObject != null)

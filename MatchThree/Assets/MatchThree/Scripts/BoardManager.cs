@@ -98,7 +98,7 @@ public class BoardManager : Singleton<BoardManager>
         {
             for (int y = 0; y < ySize; y++)
             {
-                //MatchFinder.Instance.ClearTilesIfMatched(tilesArray[x, y]);
+                MatchFinder.Instance.ClearAllMatches(tilesArray[x, y]);
             }
         }
         

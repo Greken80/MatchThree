@@ -98,7 +98,6 @@ MonoBehaviour:
   startingPos: {x: 0, y: 0, z: 0}
   adjecentTiles: []
   matchFound: 0
-  tileValue: 50
 --- !u!65 &2951431100478873788
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -107,7 +106,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1105675696364358269}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 5, y: 5, z: 0.3}
