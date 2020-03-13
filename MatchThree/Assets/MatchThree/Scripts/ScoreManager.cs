@@ -7,7 +7,7 @@ public class ScoreManager : Singleton<ScoreManager>
 
     public int CurrentScore { get; private set; }
 
-    [SerializeField]private GuiManager guiManager;
+    [SerializeField] private GuiManager guiManager;
 
     [SerializeField] private int tileValue;
 
@@ -25,17 +25,13 @@ public class ScoreManager : Singleton<ScoreManager>
     private void UpdateScoreBoard(int points)
     {
         guiManager.AddScore(points);
-        ChekIfLevelCompleted();
+
     }
 
     private void ChekIfLevelCompleted()
     {
-
-        if(CurrentScore >= GameManager.Instance.GetCurrentLevelInfo())
-        {
-            GameManager.Instance.IncreaseLevel();
-        }
-
+        //if level completed
+        //Increase level and show new level screen for the user
     }
 
 

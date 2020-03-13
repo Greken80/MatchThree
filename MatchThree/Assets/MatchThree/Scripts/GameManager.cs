@@ -9,7 +9,7 @@ public class GameManager : Singleton<GameManager>
     public int currentLevel { get; private set; } = 0;
 
 
-    public int[] levelScores;
+    public int levelScores = 600;
 
 
     private void Start()
@@ -29,29 +29,6 @@ public class GameManager : Singleton<GameManager>
         ScoreManager.Instance.ScoreReset();
     }
  
-    public int GetCurrentLevelInfo()
-    {
 
-        int levelPoints = levelScores[currentLevel];
-
-        return levelPoints;
-    }
-
-    public void IncreaseLevel()
-    {
-        currentLevel++;
-
-        if(currentLevel > levelScores.Length)
-        {
-            //Show gameover
-            //Give the user the option to start again or quit
-            currentLevel = 0;
-        }
-        else
-        {
-            //show new level screen;
-        }
-
-    }
 
 }
