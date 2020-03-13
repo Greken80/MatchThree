@@ -30,11 +30,11 @@ public class BoardManager : Singleton<BoardManager>
 
     void Start()
     {
-        CreateBoard();
+        
 
     }
 
-    private void CreateBoard()
+    public void CreateBoard()
     {
         Vector2 size = tilePrefab.GetComponent<SpriteRenderer>().bounds.size;
         SetupBoard(size.x + tilePadding, size.y + tilePadding);
@@ -172,7 +172,7 @@ public class BoardManager : Singleton<BoardManager>
                 Destroy(tilesArray[x, y]);
             }
         }
-        ScoreManager.Instance.ScoreReset();
+        
         CreateBoard();
         IsShifting = false;
     }

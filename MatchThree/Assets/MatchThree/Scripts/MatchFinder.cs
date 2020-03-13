@@ -7,7 +7,7 @@ public class MatchFinder : Singleton<MatchFinder>
 
     public void CheckForMatches(GameObject[] objects)
     {
-        
+
         foreach (GameObject obj in objects)
         {
 
@@ -23,12 +23,12 @@ public class MatchFinder : Singleton<MatchFinder>
             CheckMatches(obj, new Vector2[] { Vector2.up, Vector2.down });
 
             //Checking for horizontal matches
-            CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });  
+            CheckMatches(obj, new Vector2[] { Vector2.left, Vector2.right });
 
         }
-           
 
-            GameObject[,] tiles = BoardManager.Instance.tilesArray;
+
+        GameObject[,] tiles = BoardManager.Instance.tilesArray;
 
         foreach (GameObject obj in tiles)
         {
@@ -41,7 +41,7 @@ public class MatchFinder : Singleton<MatchFinder>
     }
 
 
-        private List<GameObject> FindMatch(Vector2 castDir, Transform rayOrigin)
+    private List<GameObject> FindMatch(Vector2 castDir, Transform rayOrigin)
     {
         rayOrigin.GetComponent<BoxCollider>().enabled = false;
         List<GameObject> matchingTiles = new List<GameObject>();
@@ -80,22 +80,22 @@ public class MatchFinder : Singleton<MatchFinder>
             matchedTiles.AddRange(FindMatch(directions[i], targetObj.transform));
 
             if (matchedTiles.Count >= 2)
-            {          
+            {
 
                 for (int y = 0; y < matchedTiles.Count; y++)
                 {
                     matchedTiles[y].GetComponent<Tile>().matchFound = true;
                 }
-                targetObj.GetComponent<Tile>().matchFound = true;           
+                targetObj.GetComponent<Tile>().matchFound = true;
             }
         }
 
-        if(matchedTiles.Count >= 2)
+        if (matchedTiles.Count >= 2)
         {
             //Adding +1 becuase the Tile dosent count itself as a match
             ScoreManager.Instance.AddPoints(matchedTiles.Count + 1);
         }
-      
+
 
     }
 
@@ -113,7 +113,7 @@ public class MatchFinder : Singleton<MatchFinder>
         //CheckMatches(obj, new Vector2[] { new Vector2(1, 1), new Vector2(-1, -1) });
 
         //Checks diagonal for matches Top left/Bottom Right;
-       // CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
+        // CheckMatches(obj, new Vector2[] { new Vector2(-1, 1), new Vector2(1, -1) });
 
         if (obj.GetComponent<Tile>().matchFound)
         {
@@ -130,11 +130,11 @@ public class MatchFinder : Singleton<MatchFinder>
 
     public void ClearTilesIfMatched(GameObject obj)
     {
-    
+
         if (obj.GetComponent<Tile>().matchFound)
         {
             obj.GetComponent<SpriteRenderer>().sprite = null;
-            obj.GetComponent<Tile>().matchFound = false;      
+            obj.GetComponent<Tile>().matchFound = false;
         }
     }
 

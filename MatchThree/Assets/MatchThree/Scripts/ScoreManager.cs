@@ -25,9 +25,18 @@ public class ScoreManager : Singleton<ScoreManager>
     private void UpdateScoreBoard(int points)
     {
         guiManager.AddScore(points);
+        ChekIfLevelCompleted();
     }
 
+    private void ChekIfLevelCompleted()
+    {
 
+        if(CurrentScore >= GameManager.Instance.GetCurrentLevelInfo())
+        {
+            GameManager.Instance.IncreaseLevel();
+        }
+
+    }
 
 
 }

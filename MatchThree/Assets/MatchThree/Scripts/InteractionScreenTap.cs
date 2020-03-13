@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class InteractionScreenTap : MonoBehaviour
@@ -12,6 +13,9 @@ public class InteractionScreenTap : MonoBehaviour
     private GameObject currentObject;
 
     private ISelectable selectable;
+
+    
+
 
     private void Awake()
     {
